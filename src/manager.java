@@ -57,6 +57,8 @@ public class manager{
         try {
             //// Connection conn = DBconnection.getMySQLConnection();
             Statement stmt = conn.createStatement();
+            ArrayList<schedule> list = new ArrayList<schedule>();
+            schedule newsched;
             PreparedStatement pstm = null;
             ResultSet rs;
             String sql;
@@ -74,7 +76,7 @@ public class manager{
 
             if(pstm.execute(sql))      //if this employee is avaialble, the query will return true otherwise they wont be added
             {
-                sql = "UPDATE schedule SET day = ?, stime = ?, etime = ? where eid = ?";
+                sql = "UPDATE schedule SET day = ?, stime = ?, etime = ? WHERE eid = ?";
 
                 PreparedStatement pstm = conn.prepareStatement(sql);
                 pstm.setString(1, s.getday());
@@ -83,23 +85,25 @@ public class manager{
                 pstm.setString(4, s.geteid());
 
                 pstm.executeUpdate();
+            }
+             else
+                System.out.println("Employee is not available to work at this time");
 
-                sql = "Select eid, day, stime, etime from schedule";
-                rs = stmt.executeQuery(sql);
-
-                ArrayList<schedule> list = new ArrayList<schedule>();
-                schedule s;
-
-                while(rs.next())
-                {
-                    s.seteid(rs.getString(1));
-                    s.setday(rs.getString(2));
-                    s.setetime(rs.getTime(4));
-                    s.setstime(rs.getTime(3));
-                    list.add(s);
-                }
-
-        } catch (SQLException e) {
+            sql = "Select eid, day, stime, etime from schedule";
+            rs = stmt.executeQuery(sql);
+            while(rs.next())
+            {
+                    newsched.seteid(rs.getString(1));
+                    newsched.setday(rs.getString(2));
+                    newsched.setetime(rs.getTime(4));
+                    newsched.setstime(rs.getTime(3));
+                    list.add(newsched);
+            }
+            pstm.close();
+            stmt.close();
+            return list;
+        }
+        catch (SQLException e) {
             e.printStackTrace();}
     }
 
