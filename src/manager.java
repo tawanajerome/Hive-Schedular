@@ -1,4 +1,6 @@
 import com.util.dbconnection;
+
+import javax.xml.transform.Result;
 import java.sql.*;
 
 public class manager{
@@ -9,7 +11,6 @@ public class manager{
         try {
             //Connection conn = DBconnection.getMySQLConnection();
             Statement stmt = conn.createStatement();
-
 
             String sql = "INSERT INTO employees VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pstm = conn.prepareStatement(sql);
@@ -44,6 +45,9 @@ public class manager{
                 list.add(emp);
             }
 
+            pstm.close();
+            stmt.close();
+
         } catch (SQLException e) {
             e.printStackTrace();}
     }
@@ -53,32 +57,47 @@ public class manager{
         try {
             //// Connection conn = DBconnection.getMySQLConnection();
             Statement stmt = conn.createStatement();
-            String sql = "UPDATE schedule SET day = ?, stime = ?, etime = ? where eid = ?";
+            PreparedStatement pstm = null;
+            ResultSet rs;
+            String sql;
 
-            //////// CHECK TO MAKE SURE THE EMPLOYEE IS AVAILABLE TO WORK AT THAT TIME //////
-            /////// MODIFY QUERY
+            /////// Check the availabilty of that employee before setting the schedule
 
-            PreparedStatement pstm = conn.prepareStatement(sql);
-            pstm.setString(1, s.getday());
-            pstm.setString(2, s.getstime());
-            pstm.setString(3, s.getetime());
-            pstm.setString(4, s.geteid());
+            sql = "SELECT S.eid, S.day, S.time, S.etime FROM schedula as S, availability as A where A.eid = ? and " +
+                    "A.day = ? and A.stime <= ? and A.etime >= ?";
 
-            pstm.executeUpdate();
+            pstm = conn.prepareStatement(sql);
+            pstm.setString(1, s.geteid());
+            pstm.setString(2, s.getday());
+            pstm.setString(3, s.getstime());
+            pstm.setString(4, s.getetime());
 
-            sql = "Select eid, day, stime, etime from schedule";
-            ResultSet rs = stmt.executeQuery(sql);
+            if(pstm.execute(sql))      //if this employee is avaialble, the query will return true otherwise they wont be added
+            {
+                sql = "UPDATE schedule SET day = ?, stime = ?, etime = ? where eid = ?";
 
-            ArrayList<schedule> list = new ArrayList<schedule>();
-            schedule s;
+                PreparedStatement pstm = conn.prepareStatement(sql);
+                pstm.setString(1, s.getday());
+                pstm.setString(2, s.getstime());
+                pstm.setString(3, s.getetime());
+                pstm.setString(4, s.geteid());
 
-            while(rs.next()) {
-                s.seteid(rs.getString(1));
-                s.setday(rs.getString(2));
-                s.setetime(rs.getTime(4));
-                s.setstime(rs.getTime(3));
-                list.add(s);
-            }
+                pstm.executeUpdate();
+
+                sql = "Select eid, day, stime, etime from schedule";
+                rs = stmt.executeQuery(sql);
+
+                ArrayList<schedule> list = new ArrayList<schedule>();
+                schedule s;
+
+                while(rs.next())
+                {
+                    s.seteid(rs.getString(1));
+                    s.setday(rs.getString(2));
+                    s.setetime(rs.getTime(4));
+                    s.setstime(rs.getTime(3));
+                    list.add(s);
+                }
 
         } catch (SQLException e) {
             e.printStackTrace();}
