@@ -110,7 +110,10 @@ public class manager{
     public void makeSchedule
     {
 
-        ////// THINK ABOUT FUNCTIONALITY ///////   -----> LOOK AT HOW MANAGERS MAKE SCHEDULES IN WHENIWORK
+       ///Have this function call the updateschedule function .... what if this took care of each day of the week
+        ////////research front-end stuff and buttons/tables work in javaFX
+        ///what if we use the update schedule function to fill the schedule table and from there have another table
+
 
 
 
