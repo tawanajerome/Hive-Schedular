@@ -107,8 +107,7 @@ public class manager{
             e.printStackTrace();}
     }
 
-    public void makeSchedule
-    {
+    public void makeSchedule(void) <--- //think about parameters because manager should not have to enter the employee eid each time just name
 
        ///Have this function call the updateschedule function .... what if this took care of each day of the week
         ////////research front-end stuff and buttons/tables work in javaFX
@@ -116,7 +115,11 @@ public class manager{
 
 
 
+            //// what if we just output each day as table in itself and manualy have the add button for each day
 
+    ////// ORRRRR Have choice/check boxes for every employee at the location and have check boxes for each seperate day
+    /////  get a running (data structure) of all the selected employees, make sure their time fits and add them to the
+    /////  schedule and outoput
     }
 
 
