@@ -1,13 +1,13 @@
 package com.util;
 import java.sql.*;
 
-public class DBconnection
+public class dbconnection
 {
     public static Connection getMySQLConnection() {
-        String hostname = "10.226.143.218";
+        String hostname = "10.226.140.147";
         String username = "root";
         String password = "Romiyo99";
-        String DBname = "hiveschedule";
+        String DBname = "hivescheduler";
 
 
         return getMySQLConnection(hostname, username, password, DBname);
