@@ -1,3 +1,5 @@
+package man;
+
 import com.util.*;
 //import javax.xml.transform.Result;
 import java.sql.*;
@@ -51,10 +53,9 @@ public class manager{
             return list;
     }
 
-    public ArrayList<schedule> UpdateSchedule(schedule s)
+    public ArrayList<schedule> UpdateSchedule(schedule s)    //updates the employee schedule
     {
         ArrayList<schedule> list = new ArrayList<schedule>();
-        schedule newsh = new schedule();
         try {
              Connection conn = dbconnection.getMySQLConnection();
             Statement stmt = conn.createStatement();
@@ -62,10 +63,10 @@ public class manager{
             ResultSet rs;
             String sql;
 
-            /////// Check the availabilty of that employee before setting the schedule
+            /////// Check the availabilty of that employee before setting the schedule ///////
 
             sql = "SELECT S.eid, S.day, S.stime, S.etime FROM schedule as S, availability as A where A.eid = ? and " +
-                    "A.day = ? and A.stime <= ? and A.etime >= ?";
+                    "A.day = ? and A.stime <= ? and A.etime >= ? and A.eid = S.eid";
 
             pstm = conn.prepareStatement(sql);
             pstm.setInt(1, s.getEid());
@@ -73,7 +74,7 @@ public class manager{
             pstm.setTime(3, s.getStime());
             pstm.setTime(4, s.getEtime());
 
-            if(pstm.execute(sql))      //if this employee is avaialble, the query will return true otherwise they wont be added
+            if(pstm.execute(sql))      //if this employee is available, the query will return true otherwise they wont be added
             {
                 sql = "UPDATE schedule SET day = ?, stime = ?, etime = ? WHERE eid = ?";
 
@@ -82,33 +83,55 @@ public class manager{
                 pstm.setTime(2, s.getStime());
                 pstm.setTime(3, s.getEtime());
                 pstm.setInt(4, s.getEid());
-
                 pstm.executeUpdate();
             }
              else
                 System.out.println("Employee is not available to work at this time");
 
-            sql = "Select eid, day, stime, etime from schedule";
-            rs = stmt.executeQuery(sql);
-            while(rs.next())
-            {
-                    newsh.setEid(rs.getInt(1));
-                    newsh.setDay(rs.getString(2));
-                    newsh.setEtime(rs.getTime(4));
-                    newsh.setStime(rs.getTime(3));
-                    list.add(newsh);
-            }
+            list = displaySchedule();
             pstm.close();
             stmt.close();
-
         }
         catch (SQLException e) {
             e.printStackTrace();}
-
             return list;
     }
 
-  //  public void makeSchedule{  //<--- //think about parameters because manager should not have to enter the employee eid each time just name
+    public ArrayList<schedule> displaySchedule()
+    {  ArrayList<schedule> list = new ArrayList<schedule>();
+       schedule newsh = new schedule();
+       try
+       {
+        Connection conn = dbconnection.getMySQLConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs;
+        String sql;
+
+        sql = "Select eid, day, stime, etime from schedule";
+        rs = stmt.executeQuery(sql);
+        while(rs.next())
+        {
+            newsh.setEid(rs.getInt(1));
+            newsh.setDay(rs.getString(2));
+            newsh.setEtime(rs.getTime(4));
+            newsh.setStime(rs.getTime(3));
+            list.add(newsh);
+        }
+        stmt.close();
+
+    }
+        catch (SQLException e) {
+        e.printStackTrace();}
+
+            return list;
+}
+
+
+
+
+
+
+  //  public void makeSchedule{  //<--- //think about parameters because man.manager should not have to enter the employee eid each time just name
 
        ///Have this function call the updateschedule function .... what if this took care of each day of the week
         ////////research front-end stuff and buttons/tables work in javaFX
